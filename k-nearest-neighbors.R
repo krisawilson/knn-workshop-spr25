@@ -1,7 +1,7 @@
 # example 1: KNN classification with NFL field goal attempts ----
 library(tidyverse)
 
-# read in data; will also upload it to my own repository
+# read in data
 nfl_fg_attempts <- read_csv("https://tinyurl.com/ykr289ew") |> 
   # remove blocked field goals
   filter(field_goal_result %in% c("made", "missed"))
@@ -10,12 +10,15 @@ nfl_fg_attempts <- read_csv("https://tinyurl.com/ykr289ew") |>
 fg_x <- select(nfl_fg_attempts, kick_distance, score_differential)
 fg_y <- as_factor(nfl_fg_attempts$field_goal_result)
 
-# plot data: will throw this on a slide. need to change the color
+# plot data: does there appear to be an underlying trend?
 #ggplot(nfl_fg_attempts) +
-#  geom_point(aes(x = kick_distance,
-#                 y = score_differential,
-#                 color = field_goal_result),
-#             size = 0.7) + theme_bw()
+#  geom_point(aes(x = kick_distance, y = score_differential,
+#                 color = field_goal_result), size = 0.7) + 
+#  scale_color_manual(values = c("made" = "orange", "missed" = "blue")) +
+#  labs(title = "Score Differential by Kick Distance",
+#       x = "Kick Distance (yards)", y = "Score Differential",
+#       color = "Field Goal Result") + 
+#  theme_bw() + theme(plot.title = element_text(hjust = 0.5)) 
 
 # knn time!
 library(FNN)
@@ -26,9 +29,9 @@ init_knn <- knn(train = fg_x, test = fg_x, cl = fg_y,
 set.seed(50)
 train_ids <- sample(1:nrow(nfl_fg_attempts),
                     ceiling(0.75 * nrow(nfl_fg_attempts)))
-train_nfl <- nfl_fg_attempts[train_ids, ] # training data
-test_nfl <- nfl_fg_attempts[-train_ids, ] # test data
-# separate predictors and response, again
+train_nfl <- nfl_fg_attempts[train_ids, ] # training datasst
+test_nfl <- nfl_fg_attempts[-train_ids, ] # test dataset
+# separate predictors we want/care about and response
 train_x <- select(train_nfl, kick_distance, score_differential)
 train_y <- train_nfl$field_goal_result
 test_x <- select(test_nfl, kick_distance, score_differential)
@@ -39,12 +42,17 @@ one_nn_train_preds <- knn(train = train_x, test = train_x,
                           cl = train_y, k = 1, algorithm = "brute")
 mean(train_y == one_nn_train_preds)
 
+# note: not 100% because there are ties!
+
+
 # assess 1NN on test data
 one_nn_test_preds <- knn(train = train_x, test = test_x, 
-                          cl = train_y, k = 1, algorithm = "brute")
+                         cl = train_y, k = 1, algorithm = "brute")
 mean(test_y == one_nn_test_preds)
 
-# loop through to decide the value of k
+# performs substantially worse on test data. overfit!
+
+# "manually" determine the value of k
 errs_train <- rep(0, 12)
 errs_test <- rep(0, 12)
 k_vals <- 1:12
@@ -64,7 +72,7 @@ errors <- bind_cols(train_err = errs_train,
                     k = k_vals)
 
 errors |> pivot_longer(c(train_err, test_err), 
-               names_to = "err_type") |> 
+                       names_to = "err_type") |> 
   ggplot(aes(x = k, y = value, 
              color = err_type)) +
   geom_point() + geom_line() +
@@ -76,7 +84,7 @@ gc()
 # example 2: knn classification using student success data ----
 
 # read in data. find a URL or upload the clean data (prior to scaling tho)
-dat <- read_delim("data/student-success.csv", 
+dat <- read_delim("raw-data/student-success.csv", 
                   delim = ";", escape_double = FALSE, trim_ws = TRUE)
 
 # clean data
@@ -128,7 +136,7 @@ errors |> pivot_longer(c(train_err, test_err),
 
 # fit KNN based upon 'best' value
 k7nn <- knn(train = train_x, test = test_x, 
-                         cl = train_y, k = 7, algorithm = "brute")
+            cl = train_y, k = 7, algorithm = "brute")
 
 #confusion matrix with more statistics
 caret::confusionMatrix(k7nn, as.factor(test_y))
@@ -136,10 +144,8 @@ caret::confusionMatrix(k7nn, as.factor(test_y))
 # extension: knn regression w/scooby doo data ----
 rm(list=ls())
 gc()
-#install.packages("tidytuesdayR")
-#pak::pkg_install("tidytuesdayR")
-library(tidytuesdayR)
 
+library(tidytuesdayR)
 # read data in 
 tuesdata <- tidytuesdayR::tt_load(2021, week = 29)
 scoobydoo <- tuesdata$scoobydoo
@@ -154,17 +160,16 @@ scooby_knn <- scoobydoo |>
 
 # knn regression time! one particular case:
 k2 <- knn.reg(train = dplyr::select(scooby_knn, -imdb),
-              y = scooby_knn$imdb,
-              k = 2)
+              y = scooby_knn$imdb, k = 2)
 
-# loop through K = 1,...,10
+# loop through K = 1, ..., 10
 knn_results <- lapply(1:10, function(k) {
   knn.reg(
     train = dplyr::select(scooby_knn, -imdb),
     y = scooby_knn$imdb,
     k = k,
     algorithm = "brute"
-    )
+  )
 })
 
 # extract Rsq values
@@ -181,7 +186,7 @@ ggplot(rsq, aes(x = k, y = r_squared)) +
   labs(
     title = "Predicted R Squared vs. Number of Neighbors K",
     x = "K", y = "Predicted R Squared"
-    ) + theme_bw() + 
+  ) + theme_bw() + 
   theme(plot.title = element_text(hjust = 0.5))
 
 # verify the max
