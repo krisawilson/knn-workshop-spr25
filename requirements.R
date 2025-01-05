@@ -5,7 +5,9 @@
 install.packages("pak")
 
 # now, here are the necessary packages to install:
-packs <- c("tidyverse", 
+packs <- c("tidyverse",
+           "janitor",
+           "caret",
            "FNN", 
            "tidytuesdayR")
 pak::pkg_install(pkg = packs)
