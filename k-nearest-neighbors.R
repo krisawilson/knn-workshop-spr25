@@ -88,11 +88,11 @@ dat <- read_delim("raw-data/student-success.csv",
                   delim = ";", escape_double = FALSE, trim_ws = TRUE)
 
 # clean data
-short_dat <- dat |> janitor::clean_names() |> select(13:21, 34:36)
+short_dat <- dat |> janitor::clean_names() |> select(13:21, 34:37)
 #write_csv(short_dat, "student_success_data.csv")
 
-#talk about why standardizing matters!
-clean_dat <- short_dat |> scale() |> as.data.frame()
+#talk about why standardizing matters. don't forget to remove Y first!
+clean_dat <- short_dat |> select(-target) |>  scale() |> as.data.frame()
 rm(short_dat)
 
 outcome <- dat$Target
