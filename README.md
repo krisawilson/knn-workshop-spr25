@@ -11,6 +11,8 @@
 - **student_success_data.csv**: Cleaned version of **student_success_data.csv** which is located in **raw-data**.
 
 Many thanks to the Data Science Learning Community and especially Jon Harmon and Ellis Hughes for the `tidytuesdayR` package, used for the `Scooby Doo` data. More can be found here:
+<div align="right">
+
 @Manual{,
   title = {tidytuesdayR: Access the Weekly 'TidyTuesday' Project Dataset},
   author = {Jon Harmon and Ellis Hughes},
@@ -18,3 +20,5 @@ Many thanks to the Data Science Learning Community and especially Jon Harmon and
   note = {R package version 1.1.2},
   url = {https://CRAN.R-project.org/package=tidytuesdayR},
 }
+
+</div>
