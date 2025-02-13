@@ -12,11 +12,7 @@
 
 Many thanks to the Data Science Learning Community and especially Jon Harmon and Ellis Hughes for the `tidytuesdayR` package, used for the `Scooby Doo` data. More can be found here:
 
-```bibtex
-@Manual{,
-  title = {tidytuesdayR: Access the Weekly 'TidyTuesday' Project Dataset},
-  author = {Jon Harmon and Ellis Hughes},
-  year = {2024},
-  note = {R package version 1.1.2},
-  url = {https://CRAN.R-project.org/package=tidytuesdayR},
-}
+**tidytuesdayR:** *Access the Weekly 'TidyTuesday' Project Dataset.*  
+Jon Harmon and Ellis Hughes (2024).  
+R package version 1.1.2.  
+[https://CRAN.R-project.org/package=tidytuesdayR](https://CRAN.R-project.org/package=tidytuesdayR)
