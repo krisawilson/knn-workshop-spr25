@@ -11,3 +11,6 @@ packs <- c("tidyverse",
            "FNN", 
            "tidytuesdayR")
 pak::pkg_install(pkg = packs)
+
+## in case pak doesn't like tidytuesdayR:
+install.packages("tidytuesdayR")
