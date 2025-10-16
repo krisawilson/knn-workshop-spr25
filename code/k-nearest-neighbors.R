@@ -2,7 +2,7 @@
 library(tidyverse)
 
 # read in data
-nfl_fg_attempts <- read_csv("https://tinyurl.com/ykr289ew") |> 
+nfl_fg_attempts <- suppressWarnings(read_csv("https://tinyurl.com/ykr289ew")) |> 
   # remove blocked field goals
   filter(field_goal_result %in% c("made", "missed"))
 
@@ -22,8 +22,6 @@ fg_y <- as_factor(nfl_fg_attempts$field_goal_result)
 
 # knn time!
 library(FNN)
-init_knn <- knn(train = fg_x, test = fg_x, cl = fg_y,
-                k = 1, algorithm = "brute")
 
 # training and test data
 set.seed(50)
@@ -194,3 +192,4 @@ which(rsq$r_squared == max(rsq$r_squared))
 
 # investigate the best
 k5 <- knn_results[[5]]
+
